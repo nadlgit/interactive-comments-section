@@ -5,9 +5,9 @@ import iconEdit from './icon-edit.svg';
 import iconReply from './icon-reply.svg';
 
 const Action = ({text, icon, action}) => (
-  <div onClick={action}>
+  <button onClick={action}>
     <img src={icon} alt={`Icon ${text}`} /> {text}
-  </div>
+  </button>
 )
 
 export default function CommentActions({userName, handleClick}) {

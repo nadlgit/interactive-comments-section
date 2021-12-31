@@ -101,9 +101,14 @@ export function initCommentList() {
 }
 
 export default function CommentList({initialList}) {
-  const refCurrentUser = React.useRef(Data.getCurrentUser());
+  const {current: currentUser} = React.useRef(Data.getCurrentUser());
+  // useRef isn't really needed but it would be if we had a remote backend with an expensive computation cost.
+  // Picked useRef and not useMemo because there are no dependencies, cf. https://blog.logrocket.com/rethinking-hooks-memoization/
+
   const [commentList, dispatchCommentList] = React.useReducer(commentListReducer, initialList);
+
   const [modalDeleteProps, setModalDeleteProps] = React.useState({show: false});
+
   const handleUserAction = (action) => {
     switch(action.type) {
       case 'empty':
@@ -127,6 +132,7 @@ export default function CommentList({initialList}) {
       default: break;
     }
   };
+
   const mapComment = comment => (
     <Comment key={comment.id}
             status={comment.status}
@@ -135,7 +141,7 @@ export default function CommentList({initialList}) {
             createdAt={comment.createdAt}
             initialContent={comment.content}
             initialScore={comment.score}
-            initialVote={comment.votes.find(item => item.userName === refCurrentUser.current.userName)?.vote}
+            initialVote={comment.votes.find(item => item.userName === currentUser.userName)?.vote}
             replyingTo={comment.replyingTo}
             handle={handleUserAction}
             commentId={comment.commentId}
@@ -143,7 +149,7 @@ export default function CommentList({initialList}) {
     />
   );
   return (
-    <CurrentUserContext.Provider value={{userName: refCurrentUser.current.userName, userImage: refCurrentUser.current.userImage}}>
+    <CurrentUserContext.Provider value={currentUser}>
         {commentList.map( comment => (
           <React.Fragment key={comment.id}>
             {mapComment(comment)}

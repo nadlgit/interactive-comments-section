@@ -5,9 +5,9 @@ import iconMinus from './icon-minus.svg';
 export default function CommentVote({initialScore, initialVote, handleClick}) {
   return (
     <div>
-      <img src={iconPlus} alt='Icon Upvote' onClick={() => handleClick('+')} style={{border: initialVote === '+' ? 'solid red' : null }} />
+      <button onClick={() => handleClick('+')} style={{border: initialVote === '+' ? 'solid red' : null }}><img src={iconPlus} alt='Icon Upvote' /></button>
       {initialScore}
-      <img src={iconMinus} alt='Icon Downvote' onClick={() => handleClick('-')} style={{border: initialVote === '-' ? 'solid red' : null }} />
+      <button onClick={() => handleClick('-')} style={{border: initialVote === '-' ? 'solid red' : null }}><img src={iconMinus} alt='Icon Downvote' /></button>
     </div>
   );
 }
