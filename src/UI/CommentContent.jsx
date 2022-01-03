@@ -5,7 +5,7 @@ export default function CommentContent({
   replyingTo
 }) {
   return (
-    <div>
+    <div className='comment__content'>
       <span>{replyingTo ? '@' + replyingTo + ' ' : ''}</span>
       {content ? content : ''}
     </div>

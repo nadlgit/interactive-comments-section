@@ -150,16 +150,18 @@ export default function CommentList({initialList}) {
   );
   return (
     <CurrentUserContext.Provider value={currentUser}>
+      <div className='commentlist'>
         {commentList.map( comment => (
           <React.Fragment key={comment.id}>
             {mapComment(comment)}
-            <div>
+            <div className='commentreplies'>
               {comment.replies.map( reply => mapComment(reply) )}
             </div>
           </React.Fragment>
           )
         )}
         <ModalDeleteComment handle={handleUserAction} {...modalDeleteProps} />
+      </div>
     </CurrentUserContext.Provider>
   );
 }

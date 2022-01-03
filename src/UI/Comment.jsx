@@ -84,29 +84,28 @@ export default function Comment({
     }
   };
 
-  switch (status) {
-    case 'saved': return (
-      <div>
-        <CommentInfo userName={userName} userImage={userImage} createdAt={createdAt} imageOnly={false} />
-        <CommentActions userName={userName} handleClick={handleActionClick} />
-        <CommentVote initialScore={initialScore} initialVote={initialVote} handleClick={handleVoteClick} />  
-        <CommentContent content={initialContent} replyingTo={replyingTo} />
-      </div>
-    )
-    case 'editing': return (
-      <div>
-        <CommentInfo userName={userName} userImage={userImage} createdAt={createdAt} imageOnly={false} />
-        <CommentActions userName={userName} handleClick={handleActionClick} />
-        <CommentVote initialScore={initialScore} initialVote={initialVote} handleClick={handleVoteClick} />
-        <CommentForm initialContent={initialContent} replyingTo={replyingTo} buttonText='Update' handleSubmit={handleFormSubmit} />
-      </div>
-    )
-    case 'new': return (
-      <div>
-        <CommentInfo userImage={userImage} imageOnly={true} />
-        <CommentForm replyingTo={replyingTo} buttonText={replyingTo ? 'Reply' : 'Send'} handleSubmit={handleFormSubmit} />
-      </div>
-    )
-    default: throw new Error(`Unexpected status: ${status}`)
-  }
+  const savedComment = (
+    <>
+      <CommentInfo userName={userName} userImage={userImage} createdAt={createdAt} />
+      <CommentContent content={initialContent} replyingTo={replyingTo} />
+      <CommentVote initialScore={initialScore} initialVote={initialVote} handleClick={handleVoteClick} />  
+      <CommentActions userName={userName} handleClick={handleActionClick} />
+    </>
+  );
+  const editingComment = (
+    <>
+      <CommentInfo userName={userName} userImage={userImage} createdAt={createdAt} />
+      <CommentForm isUpdate={true} initialContent={initialContent} replyingTo={replyingTo} buttonText='Update' handleSubmit={handleFormSubmit} />
+      <CommentVote initialScore={initialScore} initialVote={initialVote} handleClick={handleVoteClick} />
+      <CommentActions userName={userName} handleClick={handleActionClick} />
+    </>
+  );
+  const newComment = <CommentForm isUpdate={false} userImage={userImage} replyingTo={replyingTo} buttonText={replyingTo ? 'Reply' : 'Send'} handleSubmit={handleFormSubmit} />;
+  return (
+    <div className='comment'>
+      {status === 'saved' ? savedComment : null}
+      {status === 'editing' ? editingComment : null}
+      {status === 'new' ? newComment : null}
+    </div>
+  );
 }

@@ -1,5 +1,6 @@
 import React from 'react';
 import { CurrentUserContext } from './CurrentUserContext';
+import CommentUserAvatar from './CommentUserAvatar';
 import { differenceInMinutes, differenceInHours, differenceInCalendarDays, differenceInWeeks, differenceInMonths, format } from 'date-fns'
 
 const formatDate = (timestamp) => {
@@ -45,8 +46,7 @@ const formatDate = (timestamp) => {
 export default function CommentInfo({
   userName,
   userImage,
-  createdAt,
-  imageOnly
+  createdAt
 }) {
   const isCurrentUSer = (React.useContext(CurrentUserContext).userName === userName);
 
@@ -57,27 +57,11 @@ export default function CommentInfo({
     return () => clearInterval(intervalId);
   }, [createdAt]);
 
-  const avatar = (
-    <picture>
-      <source srcSet={userImage?.webp} type='image/webp' />
-      <source srcSet={userImage?.png} type='image/png' />
-      <img src={userImage?.png} alt='User avatar' />
-    </picture>
-  );
-
-  if (imageOnly) {
-    return (
-      <div>
-        {avatar}
-      </div>
-    )
-  } else {
-    return (
-      <div>
-        {avatar}
-        <div>{userName} {isCurrentUSer ? <span>you</span> : ''} </div>
-        <div>{formattedCreatedAt}</div>
-      </div>
-    )
-  }
+  return (
+    <div className='comment__info'>
+      <CommentUserAvatar userImage={userImage} />
+      <div className='comment__username'>{userName} {isCurrentUSer ? <span>you</span> : ''} </div>
+      <div>{formattedCreatedAt}</div>
+    </div>
+  )
 }
