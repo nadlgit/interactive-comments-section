@@ -8,7 +8,7 @@ const Action = ({text, icon, action, color}) => (
   <button onClick={action} className={color ? `comment__actionitem comment__actionitem--${color}` : 'comment__actionitem'}>
     <img src={icon} alt={`Icon ${text}`} /> {text}
   </button>
-)
+);
 
 export default function CommentActions({userName, handleClick}) {
   const isCurrentUSer = (React.useContext(CurrentUserContext).userName === userName);
@@ -24,5 +24,5 @@ export default function CommentActions({userName, handleClick}) {
     <div className='comment__action'>
       {isCurrentUSer ? currentUSerActions : otherUserActions}
     </div>
-  )
+  );
 }

@@ -3,16 +3,16 @@ import Comment from './Comment';
 import ModalDeleteComment from './ModalDeleteComment';
 import { CurrentUserContext } from './CurrentUserContext';
 import * as Data from '../data/data';
-//import {useErrorHandler} from 'react-error-boundary';
 
 const commentListReducer = (list, action) => {
   let newList = [...list];
+  const idList = newList.reduce((result, comment) => [...result, comment.id, ...comment.replies.map(item => item.id)], []);
   const existingComment = newList.find( item => item.id === action.commentId );
   const existingReply = existingComment?.replies.find( item => item.id === action.replyId );
   const existingItem = existingReply ?? existingComment;
   const addEmptyItem = (user, commentId) => {   
     const newItem = {
-      id: Date.now(),
+      id: Data.getNewId(),
       userName: user.userName,
       userImage: user.userImage,
       createdAt: null,
@@ -21,6 +21,9 @@ const commentListReducer = (list, action) => {
       votes: [],
       status: 'new'
     };
+    if (idList.includes(newItem.id)) { // prevent duplicates
+      return;
+    }
     if (commentId) { // it's an empty reply
       newItem.commentId = commentId;
       newItem.replyId = newItem.id;
@@ -46,6 +49,11 @@ const commentListReducer = (list, action) => {
     case 'save':
       if (existingItem) {
         if (action.content) {
+          Data.updateCommentContent(
+            existingItem.commentId,
+            existingItem.replyId,
+            action.content
+          );
           existingItem.content = action.content;
         }
         existingItem.status = 'saved';
@@ -57,6 +65,13 @@ const commentListReducer = (list, action) => {
           existingItem.content = action.content;
         }
         existingItem.createdAt = Date.now();
+        Data.createComment(
+          existingItem.commentId,
+          existingItem.replyId,
+          existingItem.replyingTo,
+          existingItem.userName,
+          existingItem.createdAt,
+          existingItem.content);
         existingItem.status = 'saved';
         if (!existingReply) {
           addEmptyItem({userName: existingItem.userName, userImage: existingItem.userImage}, null);
@@ -64,23 +79,33 @@ const commentListReducer = (list, action) => {
       }
       break;
     case 'delete':
-      const deleteFilter = item => item !== existingItem;
-      if (action.replyId) {
-        existingComment.replies = existingComment.replies.filter(deleteFilter);
-      } else {
-        newList = newList.filter(deleteFilter);
+      const itemExists = existingItem ? true : false ;
+      if (itemExists) {
+        Data.deleteComment(existingItem.commentId, existingItem.replyId);
+        const deleteFilter = item => item !== existingItem;
+        if (action.replyId) {
+          existingComment.replies = existingComment.replies.filter(deleteFilter);
+        } else {
+          newList = newList.filter(deleteFilter);
+        }
       }
       break;
     case 'vote':
       if (existingItem) {
-        const voteValue = symbol => symbol === '+' ? 1 : symbol === '-' ? -1 : 0;
+        const userVote = {userName: action.user.userName, vote: action.vote};
         const existingVote = existingItem.votes.find(item => item.userName === action.user.userName);
-        existingItem.score = existingItem.score + voteValue(action.vote);
+        const voteValue = symbol => symbol === '+' ? 1 : symbol === '-' ? -1 : 0;
+        const newScore = existingItem.score + voteValue(action.vote) - voteValue(existingVote?.vote);
+        Data.updateCommentVotes(
+          existingItem.commentId,
+          existingItem.replyId,
+          userVote,
+          newScore);
+        existingItem.score = newScore;
         if (existingVote) {
-          existingItem.score = existingItem.score - voteValue(existingVote.vote);
-          existingVote.vote = action.vote;
+          existingVote.vote = userVote.vote;
         } else {
-          existingItem.votes.push({userName: action.user.userName, vote: action.vote});
+          existingItem.votes.push(userVote);
         }
       }
       break;

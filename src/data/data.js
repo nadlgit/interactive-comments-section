@@ -1,6 +1,5 @@
 import jsonData from './data.json';
 import { subMonths, subWeeks, subDays } from 'date-fns'
-//import {useErrorHandler} from 'react-error-boundary';
 
 function processJsonImage(image) {
   return {
@@ -64,17 +63,14 @@ export function getCurrentUser() {
 export function getCommentList() {
   return getJsonCommentList();
 }
-
-/*
-TBD:
-export function createComment(commentId, objet) { //return ok/ko ou throw + new ID
+export function getNewId() {
+  return Date.now();
 }
-export function readComment(commentId, replyId) {
+export function createComment(commentId, replyId, replyingTo, userName, createdAt, content) {
 }
-export function updateComment(commentId, replyId, content) { //return ok/ko ou throw
+export function updateCommentContent(commentId, replyId, content) {
 }
-export function deleteComment(commentId, replyId) { //return ok/ko ou throw
+export function updateCommentVotes(commentId, replyId, userVote, score) {
 }
-export function updateVote(commentId, replyId, objet) { //return ok/ko ou throw
+export function deleteComment(commentId, replyId) {
 }
-*/
